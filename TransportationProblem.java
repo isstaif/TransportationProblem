@@ -59,16 +59,19 @@ public class TransportationProblem {
         
         double min;        
         int k = 0; //feasible solutions counter
-        boolean [][]isSet = new boolean[stockSize][requiredSize];
         
+        //isSet is responsible for annotating cells that have been allocated
+        boolean [][]isSet = new boolean[stockSize][requiredSize];        
         for (int j = 0; j < requiredSize; j++)
             for (int i = 0;  i < stockSize; i++)
                     isSet[i][j] = false;
         
-        
+        //the for loop is responsible for iterating in the 'north-west' manner
         for (int j = 0; j < requiredSize; j++)
             for (int i = 0;  i < stockSize; i++)
                 if(!isSet[i][j]){
+                    
+                    //allocating stock in the proper manner
                     min = Math.min(required[j], stock[i]);
                     
                     feasible.get(k).setRequired(j);
@@ -79,6 +82,7 @@ public class TransportationProblem {
                     required[j] -= min;
                     stock[i] -= min;
                     
+                    //allocating null values in the removed row/column
                     if(stock[i] == 0)
                         for(int l = 0; l < requiredSize; l++)
                             isSet[i][l] = true;                    
@@ -91,6 +95,10 @@ public class TransportationProblem {
     
     /**
      * initializes the feasible solution list using the Least Cost Rule
+     * 
+     * it differs from the North-West Corner rule by the order of candidate cells
+     * which is determined by the corresponding cost
+     * 
      * @return double: time elapsed
      */
     
@@ -99,8 +107,9 @@ public class TransportationProblem {
 
         double min;        
         int k = 0; //feasible solutions counter
-        boolean [][]isSet = new boolean[stockSize][requiredSize];
         
+        //isSet is responsible for annotating cells that have been allocated
+        boolean [][]isSet = new boolean[stockSize][requiredSize];        
         for (int j = 0; j < requiredSize; j++)
             for (int i = 0;  i < stockSize; i++)
                     isSet[i][j] = false;
@@ -108,7 +117,7 @@ public class TransportationProblem {
         int i = 0, j = 0;
         Variable minCost = new Variable();
         
-        
+        //this will loop is responsible for candidating cells by their least cost
         while(k < (stockSize + requiredSize - 1)){
             
             minCost.setValue(Double.MAX_VALUE);            
@@ -125,7 +134,7 @@ public class TransportationProblem {
             i = minCost.getStock();
             j = minCost.getRequired();            
             
-            //locating stock...
+            //allocating stock in the proper manner
             min = Math.min(required[j], stock[i]);
 
             feasible.get(k).setRequired(j);
@@ -135,7 +144,8 @@ public class TransportationProblem {
 
             required[j] -= min;
             stock[i] -= min;
-
+            
+            //allocating null values in the removed row/column
             if(stock[i] == 0)
                 for(int l = 0; l < requiredSize; l++)
                     isSet[i][l] = true;                    
